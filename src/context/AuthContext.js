@@ -12,8 +12,8 @@ export function AuthProvider({ children }) {
   const [mode,setMode]=useState("light");
 
   // Function to log in
-  const login = (token,user) => {
-    localStorage.setItem('token',token)
+  const login = (user) => {
+   
     localStorage.setItem('user', JSON.stringify(user));
     setIsLoggedIn(true);
   };
@@ -21,7 +21,7 @@ export function AuthProvider({ children }) {
   // Function to log out
   const logout = () => {
     localStorage.removeItem('user');
-    localStorage.removeItem('token');
+    
     setIsLoggedIn(false);
   };
 

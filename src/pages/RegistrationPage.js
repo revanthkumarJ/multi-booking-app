@@ -7,8 +7,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import textFieldStyles from "../styles"
+import qs from 'qs';
 
-const apiUrl = process.env.REACT_APP_API_URL;
+
 const singnUpUrl = process.env.REACT_APP_SIGNUP_URL;
 
 const RegistrationPage = () => {
@@ -19,39 +20,37 @@ const RegistrationPage = () => {
     const [error, setError] = useState('');
     const { mode } = useAuth();
     const navigate = useNavigate();
+
     const handleSignUp = async (e) => {
         e.preventDefault();
 
         // Basic validation
         if (!email || !password || !name || !mobile) {
-            setError('Please fill in All fields');
+            setError('Please fill in all fields');
             return;
         }
 
         try {
-            const response = await axios.post(apiUrl + singnUpUrl, { email, password, name, mobile }, {
+            const response = await axios.post(singnUpUrl, qs.stringify({ email, password, name, mobile }), {
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/x-www-form-urlencoded"
                 }
             });
-
-
-            if (response.status === 201) {
-                setError('');
-                navigate("/login");
+            console.log(response)
+            if (response.data.success) { // Correct way to access success
+                setError(''); // Clear any previous error messages
+                navigate("/login"); // Redirect to login page
+            }
+            else {
+                setError(response.data.message);
             }
         } catch (error) {
 
-            if (error.response && error.response.status === 400) {
-                setError("Account already exists with this email");
-            } else {
+            setError('An unexpected error occurred. Please try again later.');
 
-                setError('An unexpected error occurred. Please try again later.');
-                console.error(error);
-            }
         }
-
     };
+
 
     return (
         <Box

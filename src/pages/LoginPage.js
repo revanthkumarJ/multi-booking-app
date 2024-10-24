@@ -7,8 +7,9 @@ import axios from "axios";
 import { useAuth } from '../context/AuthContext';
 import textFieldStyles from "../styles"
 
-const apiUrl = process.env.REACT_APP_API_URL;
+
 const loginUrl = process.env.REACT_APP_LOGIN_URL;
+// const loginUrl="https://script.google.com/macros/s/AKfycbxfFvoKKfrD78NMeQ8pHNPmiOxLGnaIvo9s57GlwqNx-LXsZgDQm61_GsjIWcpdiGMC2A/exec?action=login"
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -20,10 +21,10 @@ const LoginPage = () => {
 
   useEffect(() => {
     // Check if user is already logged in
-    const token = localStorage.getItem("token");
+    
     const user = JSON.parse(localStorage.getItem("user"));
 
-    if (token && user) {
+    if (user) {
       setUser(user);
     }
   }, []);
@@ -37,16 +38,27 @@ const LoginPage = () => {
       return;
     }
 
+
     try {
-      const response = await axios.post(apiUrl + loginUrl, { email, password }, {
+      const response = await axios.post(loginUrl, { email, password }, {
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/x-www-form-urlencoded"
         }
       });
-      login(response.data.token, response.data.user);
+      console.log(response)
+      if(response.data.success)
+      {
+        login(response.data.user);
       setError('');
       navigate("/home");
 
+
+      }
+      else
+      {setError(response.data.message);
+
+      }
+      
     } catch (error) {
       setError('Wrong Credentials');
     }
